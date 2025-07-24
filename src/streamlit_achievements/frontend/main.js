@@ -11,7 +11,7 @@ function sendValue(value) {
   Streamlit.setComponentValue(value)
 }
 
-function createAchievement(title, description, points, iconText, duration, lightGreen, darkGreen, textColor, shadowColor, timestamp) {
+function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, timestamp) {
   const container = document.getElementById('root');
   
   // Use timestamp as unique achievement ID
@@ -44,8 +44,8 @@ function createAchievement(title, description, points, iconText, duration, light
   achievementContainer.setAttribute('data-achievement-id', achievementId);
   
   // Set custom colors using CSS custom properties with fallbacks
-  achievementContainer.style.setProperty('--light-green', lightGreen || '#8BC34A');
-  achievementContainer.style.setProperty('--dark-green', darkGreen || '#2E7D32');
+  achievementContainer.style.setProperty('--light-green', iconBackgroundColor || '#8BC34A');
+  achievementContainer.style.setProperty('--dark-green', backgroundColor || '#2E7D32');
   achievementContainer.style.setProperty('--text-color', textColor || '#FFFFFF');
   achievementContainer.style.setProperty('--shadow-color', shadowColor || 'rgba(0,0,0,0.3)');
   
@@ -119,8 +119,8 @@ function onRender(event) {
     points, 
     icon_text, 
     duration,
-    light_green,
-    dark_green, 
+    icon_background_color,
+    background_color, 
     text_color,
     shadow_color,
     timestamp
@@ -141,8 +141,8 @@ function onRender(event) {
     points, 
     icon_text, 
     duration || 5000,
-    light_green || "#8BC34A",
-    dark_green || "#2E7D32", 
+    icon_background_color || "#8BC34A",
+    background_color || "#2E7D32", 
     text_color || "#FFFFFF",
     shadow_color || "rgba(0,0,0,0.3)",
     timestamp

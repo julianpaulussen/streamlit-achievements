@@ -1,10 +1,10 @@
 # streamlit-achievements
 
-🎮 A Streamlit custom component that creates-style achievement notifications with smooth animations.
+🎮 A Streamlit custom component that creates achievement notifications with smooth animations.
 
 ## Features
 
-- **-Style Design**: Authentic achievement look and feel
+- **Design**: Authentic achievement look and feel
 - **Smooth Animations**: Slide-in, background expansion, text fade-in, and slide-out effects
 - **Customizable Colors**: Full control over icon, background, text, and shadow colors
 - **Flexible Content**: Optional title, description, points, and icon text
@@ -42,8 +42,8 @@ if st.button("Unlock Achievement"):
 | `points` | int | `0` | Point value for the achievement (shows "P" suffix when > 0) |
 | `icon_text` | str | `""` | Text or emoji displayed in the circular icon |
 | `duration` | int | `5000` | Duration in milliseconds before auto-hide |
-| `light_green` | str | `"#8BC34A"` | Color for the circular icon background |
-| `dark_green` | str | `"#2E7D32"` | Color for the expanding background |
+| `icon_background_color` | str | `"#8BC34A"` | Color for the circular icon background |
+| `background_color` | str | `"#2E7D32"` | Color for the expanding background |
 | `text_color` | str | `"#FFFFFF"` | Color for text and icon content |
 | `shadow_color` | str | `"rgba(0,0,0,0.3)"` | Color for shadows and depth effects |
 | `key` | str | `None` | Optional key for the component |
@@ -87,8 +87,8 @@ streamlit_achievements(
     description="Deep Sea Discovery",
     points=25,
     icon_text="🌊",
-    light_green="#42A5F5",
-    dark_green="#1976D2"
+    icon_background_color="#42A5F5",
+    background_color="#1976D2"
 )
 
 # Sunset theme
@@ -97,8 +97,8 @@ streamlit_achievements(
     description="Epic Journey",
     points=50,
     icon_text="🌅",
-    light_green="#FF9800",
-    dark_green="#F57C00"
+    icon_background_color="#FF9800",
+    background_color="#F57C00"
 )
 ```
 
@@ -149,8 +149,8 @@ with st.form("custom_achievement"):
         icon = st.text_input("Icon", "🎮")
     
     with col2:
-        light_green = st.color_picker("Icon Color", "#8BC34A")
-        dark_green = st.color_picker("Background", "#2E7D32")
+        icon_background_color = st.color_picker("Icon Color", "#8BC34A")
+        background_color = st.color_picker("Background", "#2E7D32")
         text_color = st.color_picker("Text Color", "#FFFFFF")
         shadow_opacity = st.slider("Shadow", 0.0, 1.0, 0.3)
     
@@ -160,8 +160,8 @@ with st.form("custom_achievement"):
             description=description,
             points=points,
             icon_text=icon,
-            light_green=light_green,
-            dark_green=dark_green,
+            icon_background_color=icon_background_color,
+            background_color=background_color,
             text_color=text_color,
             shadow_color=f"rgba(0,0,0,{shadow_opacity})"
         )

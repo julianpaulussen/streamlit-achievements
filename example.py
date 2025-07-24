@@ -45,12 +45,12 @@ with st.form("custom_achievement"):
     
     with col_b:
         st.subheader("Color Customization")
-        light_green = st.color_picker(
+        icon_background_color = st.color_picker(
             "Icon Background Color", 
             value="#8BC34A",
             help="Color for the circular icon background"
         )
-        dark_green = st.color_picker(
+        background_color = st.color_picker(
             "Achievement Background", 
             value="#2E7D32",
             help="Color for the expanding background"
@@ -76,8 +76,8 @@ with st.form("custom_achievement"):
             description=custom_description,
             points=int(custom_points),
             icon_text=custom_icon,
-            light_green=light_green,
-            dark_green=dark_green,
+            icon_background_color=icon_background_color,
+            background_color=background_color,
             text_color=text_color,
             shadow_color=f"rgba(0,0,0,{shadow_opacity})"
         )
@@ -116,7 +116,7 @@ st.code(code_example, language="python")
 st.header("📚 Parameters")
 
 param_data = {
-    "Parameter": ["title", "description", "points", "icon_text", "duration", "light_green", "dark_green", "text_color", "shadow_color"],
+    "Parameter": ["title", "description", "points", "icon_text", "duration", "icon_background_color", "background_color", "text_color", "shadow_color"],
     "Type": ["str", "str", "int", "str", "int", "str", "str", "str", "str"],
     "Default": ['""', '""', "0", '""', "5000", "#8BC34A", "#2E7D32", "#FFFFFF", "rgba(0,0,0,0.3)"],
     "Description": [
