@@ -11,6 +11,17 @@ function sendValue(value) {
   Streamlit.setComponentValue(value)
 }
 
+function createFloatingAchievementInParent(achievementData) {
+  // Send message to parent window to create floating achievement
+  const message = {
+    type: 'STREAMLIT_ACHIEVEMENT_FLOATING',
+    data: achievementData
+  };
+  
+  console.log('Sending floating achievement to parent window:', message);
+  window.parent.postMessage(message, '*');
+}
+
 function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, timestamp) {
   const container = document.getElementById('root');
   
@@ -35,10 +46,43 @@ function createAchievement(title, description, points, iconText, duration, iconB
   
   console.log('Creating achievement:', { title, description, points, iconText, autoWidth, floating, position, achievementId });
   
-  // Clear any existing achievements
+  // If floating, create in parent window instead of iframe
+  if (floating) {
+    const achievementData = {
+      achievementId,
+      title: title || "",
+      description: description || "",
+      points: points || 0,
+      iconText: iconText || "",
+      duration: Math.max(duration || 5000, 5000),
+      iconBackgroundColor: iconBackgroundColor || '#8BC34A',
+      backgroundColor: backgroundColor || '#2E7D32',
+      textColor: textColor || '#FFFFFF',
+      shadowColor: shadowColor || 'rgba(0,0,0,0.3)',
+      autoWidth: autoWidth !== false,
+      position: position || 'top'
+    };
+    
+    createFloatingAchievementInParent(achievementData);
+    
+    // Set minimal frame height for floating
+    Streamlit.setFrameHeight(10);
+    
+    // Send completion status back to Streamlit
+    sendValue({
+      status: 'shown',
+      title: title,
+      description: description,
+      points: points,
+      timestamp: timestamp
+    });
+    return;
+  }
+  
+  // Clear any existing achievements (for inline mode)
   container.innerHTML = '';
   
-  // Create the achievement element
+  // Create the achievement element (inline mode)
   const achievementContainer = document.createElement('div');
   achievementContainer.className = 'achievement-container';
   achievementContainer.setAttribute('data-achievement-id', achievementId);
@@ -46,10 +90,6 @@ function createAchievement(title, description, points, iconText, duration, iconB
   // Add CSS classes based on configuration
   if (autoWidth) {
     achievementContainer.classList.add('auto-width');
-  }
-  if (floating) {
-    achievementContainer.classList.add('floating');
-    achievementContainer.classList.add(position || 'top');
   }
   
   // Set custom colors using CSS custom properties with fallbacks
@@ -81,14 +121,8 @@ function createAchievement(title, description, points, iconText, duration, iconB
   
   container.appendChild(achievementContainer);
   
-  // Set appropriate frame height based on floating mode
-  if (floating) {
-    // For floating achievements, use minimal height since content appears outside iframe
-    Streamlit.setFrameHeight(10);
-  } else {
-    // For inline achievements, use standard height
-    Streamlit.setFrameHeight(120);
-  }
+  // For inline achievements, use standard height
+  Streamlit.setFrameHeight(120);
   
   // Auto-hide after specified duration
   // Make sure it stays visible for at least the animation duration
@@ -179,3 +213,310 @@ Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 Streamlit.setComponentReady()
 // Render with the correct height - will be updated dynamically based on floating mode
 Streamlit.setFrameHeight(120)
+
+// Inject floating achievement handler into parent window
+function injectParentWindowHandler() {
+  if (window.parent && window.parent !== window) {
+    try {
+      // Check if handler already exists
+      if (window.parent.streamlitAchievementHandlerInjected) {
+        return;
+      }
+      
+      const scriptContent = `
+        // Mark as injected
+        window.streamlitAchievementHandlerInjected = true;
+        
+        // CSS for floating achievements in parent window
+        const achievementCSS = \`
+          .streamlit-floating-achievement {
+            position: fixed;
+            z-index: 999999;
+            left: 50%;
+            margin: 0;
+            opacity: 0;
+            transform: translateX(-50%) translateX(-100%);
+            width: 400px;
+            max-width: calc(100vw - 40px);
+            min-width: 300px;
+            height: 80px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            pointer-events: none;
+          }
+          
+          .streamlit-floating-achievement.auto-width {
+            width: calc(100vw - 40px);
+            max-width: 600px;
+          }
+          
+          .streamlit-floating-achievement.top {
+            top: 20px;
+          }
+          
+          .streamlit-floating-achievement.middle {
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%) translateX(-100%);
+          }
+          
+          .streamlit-floating-achievement.bottom {
+            bottom: 20px;
+          }
+          
+          .streamlit-floating-achievement .achievement-notification {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--light-green) 0%, var(--light-green) 100%);
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--shadow-color);
+            border: 2px solid var(--dark-green);
+          }
+          
+          .streamlit-floating-achievement .achievement-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--dark-green) 100%);
+            border-radius: 38px;
+            transform: scaleX(0);
+            transform-origin: left center;
+            animation: streamlit-expandBackground 2.5s ease-out 0.8s forwards;
+          }
+          
+          @keyframes streamlit-expandBackground {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+          }
+          
+          .streamlit-floating-achievement .achievement-icon {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--light-green) 0%, var(--light-green) 100%);
+            border-radius: 50%;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+            text-shadow: 0 1px 3px var(--shadow-color);
+            border: 3px solid var(--dark-green);
+            z-index: 2;
+            animation: streamlit-iconPulse 0.8s ease-out 1.2s;
+          }
+          
+          @keyframes streamlit-iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+          }
+          
+          .streamlit-floating-achievement .achievement-content {
+            position: relative;
+            flex: 1;
+            padding: 10px 20px 10px 0;
+            z-index: 2;
+            color: var(--text-color);
+          }
+          
+          .streamlit-floating-achievement .achievement-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            text-shadow: 0 1px 2px var(--shadow-color);
+            opacity: 0;
+            animation: streamlit-fadeInText 0.6s ease-out 1.5s forwards;
+          }
+          
+          .streamlit-floating-achievement .achievement-description {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 0 1px 2px var(--shadow-color);
+            opacity: 0;
+            animation: streamlit-fadeInText 0.6s ease-out 1.8s forwards;
+          }
+          
+          .streamlit-floating-achievement .achievement-points {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-color);
+            text-shadow: 0 1px 2px var(--shadow-color);
+            z-index: 2;
+            opacity: 0;
+            animation: streamlit-fadeInText 0.6s ease-out 2.1s forwards;
+          }
+          
+          @keyframes streamlit-fadeInText {
+            to { opacity: 1; }
+          }
+          
+          .streamlit-floating-achievement.slide-in {
+            animation: streamlit-slideInFloating 0.8s ease-out forwards;
+          }
+          
+          .streamlit-floating-achievement.middle.slide-in {
+            animation: streamlit-slideInMiddle 0.8s ease-out forwards;
+          }
+          
+          @keyframes streamlit-slideInFloating {
+            from {
+              opacity: 0;
+              transform: translateX(-50%) translateX(-100%);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(-50%) translateX(0);
+            }
+          }
+          
+          @keyframes streamlit-slideInMiddle {
+            from {
+              opacity: 0;
+              transform: translateX(-50%) translateY(-50%) translateX(-100%);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(-50%) translateY(-50%) translateX(0);
+            }
+          }
+          
+          .streamlit-floating-achievement.slide-out {
+            animation: streamlit-slideOutFloating 0.6s ease-in forwards;
+          }
+          
+          .streamlit-floating-achievement.middle.slide-out {
+            animation: streamlit-slideOutMiddle 0.6s ease-in forwards;
+          }
+          
+          @keyframes streamlit-slideOutFloating {
+            to {
+              opacity: 0;
+              transform: translateX(-50%) translateX(100%);
+            }
+          }
+          
+          @keyframes streamlit-slideOutMiddle {
+            to {
+              opacity: 0;
+              transform: translateX(-50%) translateY(-50%) translateX(100%);
+            }
+          }
+        \`;
+        
+        // Inject CSS into parent document
+        if (!document.getElementById('streamlit-achievement-styles')) {
+          const styleElement = document.createElement('style');
+          styleElement.id = 'streamlit-achievement-styles';
+          styleElement.textContent = achievementCSS;
+          document.head.appendChild(styleElement);
+        }
+        
+        // Message handler for floating achievements
+        function handleAchievementMessage(event) {
+          if (event.data && event.data.type === 'STREAMLIT_ACHIEVEMENT_FLOATING') {
+            const data = event.data.data;
+            console.log('Received floating achievement data in parent:', data);
+            createFloatingAchievementInParent(data);
+          }
+        }
+        
+        function createFloatingAchievementInParent(data) {
+          // Remove any existing achievements
+          const existing = document.querySelectorAll('.streamlit-floating-achievement');
+          existing.forEach(el => el.remove());
+          
+          // Create achievement element
+          const achievement = document.createElement('div');
+          achievement.className = 'streamlit-floating-achievement';
+          achievement.setAttribute('data-achievement-id', data.achievementId);
+          
+          // Add position class
+          achievement.classList.add(data.position || 'top');
+          
+          // Add auto-width class if needed
+          if (data.autoWidth) {
+            achievement.classList.add('auto-width');
+          }
+          
+          // Set CSS custom properties for colors
+          achievement.style.setProperty('--light-green', data.iconBackgroundColor);
+          achievement.style.setProperty('--dark-green', data.backgroundColor);
+          achievement.style.setProperty('--text-color', data.textColor);
+          achievement.style.setProperty('--shadow-color', data.shadowColor);
+          
+          // Check if points should be displayed
+          const shouldShowPoints = data.points > 0 && data.points !== "" && data.points !== null;
+          
+          achievement.innerHTML = \`
+            <div class="achievement-notification">
+              <div class="achievement-background"></div>
+              <div class="achievement-icon">\${data.iconText}</div>
+              <div class="achievement-content">
+                <div class="achievement-title" style="display: \${data.title ? 'block' : 'none'}">\${data.title}</div>
+                <div class="achievement-description" style="display: \${data.description ? 'block' : 'none'}">\${data.description}</div>
+              </div>
+              <div class="achievement-points" style="display: \${shouldShowPoints ? 'block' : 'none'}">\${data.points}P</div>
+            </div>
+          \`;
+          
+          // Add to document
+          document.body.appendChild(achievement);
+          
+          // Trigger slide-in animation
+          setTimeout(() => {
+            achievement.classList.add('slide-in');
+          }, 50);
+          
+          // Auto-hide after duration
+          setTimeout(() => {
+            if (document.body.contains(achievement)) {
+              achievement.classList.add('slide-out');
+              setTimeout(() => {
+                if (document.body.contains(achievement)) {
+                  document.body.removeChild(achievement);
+                }
+              }, 600);
+            }
+          }, data.duration);
+        }
+        
+        // Add event listener if not already added
+        if (!window.streamlitAchievementListenerAdded) {
+          window.addEventListener('message', handleAchievementMessage);
+          window.streamlitAchievementListenerAdded = true;
+          console.log('Streamlit floating achievement handler injected into parent window');
+        }
+      `;
+      
+      // Create and inject script
+      const script = window.parent.document.createElement('script');
+      script.textContent = scriptContent;
+      window.parent.document.head.appendChild(script);
+      
+    } catch (error) {
+      console.log('Could not inject parent window handler (cross-origin):', error);
+    }
+  }
+}
+
+// Try to inject the handler when component loads
+try {
+  injectParentWindowHandler();
+} catch (error) {
+  console.log('Initial injection failed:', error);
+}
