@@ -116,9 +116,9 @@ st.code(code_example, language="python")
 st.header("📚 Parameters")
 
 param_data = {
-    "Parameter": ["title", "description", "points", "icon_text", "duration", "icon_background_color", "background_color", "text_color", "shadow_color"],
-    "Type": ["str", "str", "int", "str", "int", "str", "str", "str", "str"],
-    "Default": ['""', '""', "0", '""', "5000", "#8BC34A", "#2E7D32", "#FFFFFF", "rgba(0,0,0,0.3)"],
+    "Parameter": ["title", "description", "points", "icon_text", "duration", "icon_background_color", "background_color", "text_color", "shadow_color", "auto_width", "floating", "position"],
+    "Type": ["str", "str", "int", "str", "int", "str", "str", "str", "str", "bool", "bool", "str"],
+    "Default": ['""', '""', "0", '""', "5000", "#8BC34A", "#2E7D32", "#FFFFFF", "rgba(0,0,0,0.3)", "True", "False", '"top"'],
     "Description": [
         "The main title displayed on the achievement",
         "The achievement description/name", 
@@ -128,10 +128,45 @@ param_data = {
         "Color for the circular icon background",
         "Color for the expanding background",
         "Color for text and icon content",
-        "Color for shadows and depth effects"
+        "Color for shadows and depth effects",
+        "Whether to auto-fit width to container",
+        "Whether to display as floating overlay above content", 
+        "Vertical position when floating: 'top', 'middle', 'bottom'"
     ]
 }
 
 st.table(param_data)
+
+st.markdown("---")
+
+# New Features Demo
+st.header("🆕 New Features Demo")
+
+col_new1, col_new2 = st.columns(2)
+
+with col_new1:
+    st.subheader("🔄 Auto-Width Achievement")
+    if st.button("🌟 Responsive Achievement", key="responsive"):
+        streamlit_achievements(
+            title="Responsive Width!",
+            description="Adapts to container",
+            points=50,
+            icon_text="🌟",
+            auto_width=True  # Default behavior
+        )
+
+with col_new2:
+    st.subheader("🎈 Floating Achievement")
+    if st.button("🚀 Floating Achievement", key="floating"):
+        streamlit_achievements(
+            title="Floating Achievement!",
+            description="Appears above content",
+            points=100,
+            icon_text="🚀",
+            floating=True,
+            position="top",
+            auto_width=True,
+            duration=7000
+        )
 
 st.markdown("---")
