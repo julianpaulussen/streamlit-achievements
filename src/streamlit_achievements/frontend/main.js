@@ -11,7 +11,7 @@ function sendValue(value) {
   Streamlit.setComponentValue(value)
 }
 
-function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, timestamp) {
+function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, timestamp) {
   const container = document.getElementById('root');
   
   // Use timestamp as unique achievement ID
@@ -33,7 +33,7 @@ function createAchievement(title, description, points, iconText, duration, iconB
   lastAchievementTime = timestamp;
   currentAchievementId = achievementId;
   
-  console.log('Creating achievement:', { title, description, points, iconText, achievementId });
+  console.log('Creating achievement:', { title, description, points, iconText, autoWidth, floating, position, achievementId });
   
   // Clear any existing achievements
   container.innerHTML = '';
@@ -42,6 +42,15 @@ function createAchievement(title, description, points, iconText, duration, iconB
   const achievementContainer = document.createElement('div');
   achievementContainer.className = 'achievement-container';
   achievementContainer.setAttribute('data-achievement-id', achievementId);
+  
+  // Add CSS classes based on configuration
+  if (autoWidth) {
+    achievementContainer.classList.add('auto-width');
+  }
+  if (floating) {
+    achievementContainer.classList.add('floating');
+    achievementContainer.classList.add(position || 'top');
+  }
   
   // Set custom colors using CSS custom properties with fallbacks
   achievementContainer.style.setProperty('--light-green', iconBackgroundColor || '#8BC34A');
@@ -71,6 +80,15 @@ function createAchievement(title, description, points, iconText, duration, iconB
   `;
   
   container.appendChild(achievementContainer);
+  
+  // Set appropriate frame height based on floating mode
+  if (floating) {
+    // For floating achievements, use minimal height since content appears outside iframe
+    Streamlit.setFrameHeight(10);
+  } else {
+    // For inline achievements, use standard height
+    Streamlit.setFrameHeight(120);
+  }
   
   // Auto-hide after specified duration
   // Make sure it stays visible for at least the animation duration
@@ -123,6 +141,9 @@ function onRender(event) {
     background_color, 
     text_color,
     shadow_color,
+    auto_width,
+    floating,
+    position,
     timestamp
   } = event.detail.args;
   
@@ -131,7 +152,7 @@ function onRender(event) {
     return;
   }
   
-  console.log('onRender called with:', { title, description, points, icon_text, timestamp });
+  console.log('onRender called with:', { title, description, points, icon_text, auto_width, floating, position, timestamp });
   
   // Only create achievement if we have been called with valid parameters
   // This includes empty achievement tests
@@ -145,6 +166,9 @@ function onRender(event) {
     background_color || "#2E7D32", 
     text_color || "#FFFFFF",
     shadow_color || "rgba(0,0,0,0.3)",
+    auto_width !== false, // Default to true
+    floating || false,
+    position || "top",
     timestamp
   );
 }
@@ -153,5 +177,5 @@ function onRender(event) {
 Streamlit.events.addEventListener(Streamlit.RENDER_EVENT, onRender)
 // Tell Streamlit that the component is ready to receive events
 Streamlit.setComponentReady()
-// Render with the correct height
+// Render with the correct height - will be updated dynamically based on floating mode
 Streamlit.setFrameHeight(120)

@@ -28,10 +28,79 @@ body {
   --shadow-color: rgba(0,0,0,0.3);
 }
 
+/* Auto-width variant */
+.achievement-container.auto-width {
+  width: calc(100% - 40px);
+  max-width: 600px;
+  min-width: 300px;
+}
+
+/* Floating variants */
+.achievement-container.floating {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) translateX(-100%);
+  margin: 0;
+  z-index: 9999;
+  width: 400px;
+  max-width: calc(100vw - 40px);
+  min-width: 300px;
+}
+
+.achievement-container.floating.auto-width {
+  width: calc(100vw - 40px);
+  max-width: 600px;
+}
+
+.achievement-container.floating.top {
+  top: 20px;
+}
+
+.achievement-container.floating.middle {
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%) translateX(-100%);
+}
+
+.achievement-container.floating.bottom {
+  bottom: 20px;
+}
+
 @keyframes slideIn {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+/* Animation for floating middle position */
+.achievement-container.floating.middle {
+  animation: slideInMiddle 0.8s ease-out forwards;
+}
+
+@keyframes slideInMiddle {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%) translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-50%) translateX(0);
+  }
+}
+
+/* Animation for floating positioning */
+.achievement-container.floating:not(.middle) {
+  animation: slideInFloating 0.8s ease-out forwards;
+}
+
+@keyframes slideInFloating {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateX(0);
   }
 }
 
@@ -153,9 +222,31 @@ body {
   animation: slideOut 0.6s ease-in forwards;
 }
 
+.achievement-container.floating.slide-out:not(.middle) {
+  animation: slideOutFloating 0.6s ease-in forwards;
+}
+
+.achievement-container.floating.middle.slide-out {
+  animation: slideOutMiddle 0.6s ease-in forwards;
+}
+
 @keyframes slideOut {
   to {
     opacity: 0;
     transform: translateX(100%);
+  }
+}
+
+@keyframes slideOutFloating {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateX(100%);
+  }
+}
+
+@keyframes slideOutMiddle {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50%) translateX(100%);
   }
 }
