@@ -22,7 +22,7 @@ function createFloatingAchievementInParent(achievementData) {
   window.parent.postMessage(message, '*');
 }
 
-function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, timestamp) {
+function createAchievement(title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, dissolve, timestamp) {
   const container = document.getElementById('root');
   
   // Use timestamp as unique achievement ID
@@ -56,7 +56,7 @@ function createAchievement(title, description, points, iconText, duration, iconB
     try {
       // Try to create floating achievement in parent document
       const parentDoc = window.parent.document;
-      createFloatingAchievement(parentDoc, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, position);
+      createFloatingAchievement(parentDoc, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, position, dissolve);
       
       // Set minimal frame height for floating
       Streamlit.setFrameHeight(1);
@@ -78,10 +78,10 @@ function createAchievement(title, description, points, iconText, duration, iconB
   }
   
   // Create regular achievement (or fallback for floating)
-  createRegularAchievement(container, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position);
+  createRegularAchievement(container, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, dissolve);
 }
 
-function createFloatingAchievement(doc, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, position) {
+function createFloatingAchievement(doc, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, position, dissolve) {
   // Create achievement element in parent document
   const achievementContainer = doc.createElement('div');
   achievementContainer.className = 'streamlit-floating-achievement';
@@ -104,17 +104,22 @@ function createFloatingAchievement(doc, achievementId, title, description, point
     pointerEvents: 'none'
   };
   
-  // Position specific styles
-  switch(position) {
-    case 'middle':
-      styles.top = '50%';
-      styles.transform = 'translateX(-50%) translateY(-50%) translateX(-100%)';
-      break;
-    case 'bottom':
-      styles.bottom = '20px';
-      break;
-    default: // 'top'
-      styles.top = '20px';
+  // Position specific styles - support both predefined positions and pixel values
+  if (position.endsWith('px')) {
+    // Custom pixel position from top
+    styles.top = position;
+  } else {
+    switch(position) {
+      case 'middle':
+        styles.top = '50%';
+        styles.transform = 'translateX(-50%) translateY(-50%) translateX(-100%)';
+        break;
+      case 'bottom':
+        styles.bottom = '20px';
+        break;
+      default: // 'top'
+        styles.top = '20px';
+    }
   }
   
   // Apply styles
@@ -246,14 +251,25 @@ function createFloatingAchievement(doc, achievementId, title, description, point
     achievementContainer.style.opacity = '1';
     if (position === 'middle') {
       achievementContainer.style.transform = 'translateX(-50%) translateY(-50%)';
+    } else if (position.endsWith('px')) {
+      achievementContainer.style.transform = 'translateX(-50%)';
     } else {
       achievementContainer.style.transform = 'translateX(-50%)';
     }
   }, 50);
   
+  // Add dissolve effect if specified
+  if (dissolve > 0 && dissolve < duration) {
+    setTimeout(() => {
+      achievementContainer.style.transition = 'opacity 1s ease-out';
+      achievementContainer.style.opacity = '0.3';
+    }, dissolve);
+  }
+  
   // Auto-hide after duration
   const minDuration = Math.max(duration || 5000, 5000);
   setTimeout(() => {
+    achievementContainer.style.transition = 'all 0.8s ease-in';
     achievementContainer.style.opacity = '0';
     if (position === 'middle') {
       achievementContainer.style.transform = 'translateX(-50%) translateY(-50%) translateX(100%)';
@@ -272,9 +288,7 @@ function createFloatingAchievement(doc, achievementId, title, description, point
   }, minDuration);
 }
 
-function createRegularAchievement(container, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position) {
-  
-function createRegularAchievement(container, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position) {
+function createRegularAchievement(container, achievementId, title, description, points, iconText, duration, iconBackgroundColor, backgroundColor, textColor, shadowColor, autoWidth, floating, position, dissolve) {
   // Create the achievement element
   const achievementContainer = document.createElement('div');
   achievementContainer.className = 'achievement-container';
@@ -317,6 +331,17 @@ function createRegularAchievement(container, achievementId, title, description, 
   // Set appropriate frame height
   Streamlit.setFrameHeight(120);
   
+  // Add dissolve effect if specified
+  if (dissolve > 0 && dissolve < duration) {
+    setTimeout(() => {
+      const element = container.querySelector(`[data-achievement-id="${achievementId}"]`);
+      if (element) {
+        element.style.transition = 'opacity 1s ease-out';
+        element.style.opacity = '0.3';
+      }
+    }, dissolve);
+  }
+  
   // Auto-hide after specified duration
   const minDuration = Math.max(duration || 5000, 5000);
   const hideTimeout = setTimeout(() => {
@@ -350,7 +375,6 @@ function createRegularAchievement(container, achievementId, title, description, 
     floating: floating
   });
 }
-}
 
 /**
  * The component's render function. This will be called immediately after
@@ -372,6 +396,7 @@ function onRender(event) {
     auto_width,
     floating,
     position,
+    dissolve,
     timestamp
   } = event.detail.args;
   
@@ -397,6 +422,7 @@ function onRender(event) {
     auto_width !== false, // Default to true
     floating || false,
     position || "top",
+    dissolve || 0,
     timestamp
   );
 }

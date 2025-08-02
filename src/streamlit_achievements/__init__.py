@@ -25,6 +25,7 @@ def streamlit_achievements(
     auto_width: bool = True,
     floating: bool = False,
     position: str = "top",
+    dissolve: int = 0,
     key: Optional[str] = None,
 ):
     """
@@ -42,12 +43,13 @@ def streamlit_achievements(
     - shadow_color: Color for shadows and depth effects (default: "rgba(0,0,0,0.3)")
     - auto_width: Whether to auto-fit width to container (default: True)
     - floating: Whether to display as floating overlay above content (default: False)
-    - position: Vertical position when floating - "top", "middle", or "bottom" (default: "top")
+    - position: Vertical position when floating - "top", "middle", "bottom", or pixel value like "100px" (default: "top")
+    - dissolve: Time in milliseconds to start dissolving/fading effect (0 = no dissolve) (default: 0)
     - key: Optional key for the component
     """
-    # Validate position parameter
+    # Validate position parameter - allow pixel values or predefined positions
     valid_positions = ["top", "middle", "bottom"]
-    if position not in valid_positions:
+    if position not in valid_positions and not (position.endswith('px') and position[:-2].isdigit()):
         position = "top"
     
     # Add timestamp to make each call unique and prevent Streamlit caching issues
@@ -67,6 +69,7 @@ def streamlit_achievements(
         auto_width=auto_width,
         floating=floating,
         position=position,
+        dissolve=dissolve,
         timestamp=timestamp,  # Add timestamp to ensure uniqueness
         key=key,
     )

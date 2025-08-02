@@ -114,50 +114,6 @@ st.code(code_example, language="python")
 
 st.markdown("---")
 
-# Floating achievements demo section
-st.header("🎈 Floating Achievements")
-st.markdown("Achievements can float over your content like `st.balloons()`!")
-
-floating_col1, floating_col2, floating_col3 = st.columns(3)
-
-with floating_col1:
-    if st.button("Float at Top"):
-        streamlit_achievements(
-            title="Floating Achievement!",
-            description="At the top of the screen",
-            points=25,
-            icon_text="🎈",
-            floating=True,
-            position="top"
-        )
-
-with floating_col2:
-    if st.button("Float in Middle"):
-        streamlit_achievements(
-            title="Centered Achievement!",
-            description="In the middle of the screen",
-            points=50,
-            icon_text="⭐",
-            floating=True,
-            position="middle",
-            background_color="#6200EA"
-        )
-
-with floating_col3:
-    if st.button("Float at Bottom"):
-        streamlit_achievements(
-            title="Bottom Achievement!",
-            description="At the bottom of the screen",
-            points=25,
-            icon_text="🎯",
-            floating=True,
-            position="bottom",
-            icon_background_color="#FF5722",
-            background_color="#D32F2F"
-        )
-
-st.info("💡 **Tip:** Floating achievements appear as overlays and don't affect page layout, making them perfect for notifications!")
-
 # Add floating achievements to the custom form
 st.markdown("---")
 st.header("🎮 Try Floating Mode in Custom Form")
@@ -192,12 +148,29 @@ with st.form("floating_achievement"):
         )
     
     with floating_col_b:
-        floating_position = st.selectbox(
-            "Floating Position",
-            options=["top", "middle", "bottom"],
+        position_type = st.radio(
+            "Position Type",
+            options=["Preset", "Custom"],
             index=0,
-            help="Where the floating achievement should appear on screen"
+            help="Choose between preset positions or custom pixel position"
         )
+        
+        if position_type == "Preset":
+            floating_position = st.selectbox(
+                "Floating Position",
+                options=["top", "middle", "bottom"],
+                index=0,
+                help="Preset position where the floating achievement should appear"
+            )
+        else:
+            custom_position = st.slider(
+                "Custom Position (px from top)",
+                min_value=20,
+                max_value=500,
+                value=100,
+                help="Custom position in pixels from the top of the screen"
+            )
+            floating_position = f"{custom_position}px"
         floating_bg_color = st.color_picker(
             "Background Color", 
             value="#9C27B0",
@@ -215,6 +188,13 @@ with st.form("floating_achievement"):
             value=6000,
             help="How long the floating achievement stays visible"
         )
+        floating_dissolve = st.slider(
+            "Dissolve Time (ms)", 
+            min_value=0, 
+            max_value=8000, 
+            value=3000,
+            help="Time after which achievement starts to fade (0 = no dissolve)"
+        )
     
     floating_submitted = st.form_submit_button("🌟 Launch Floating Achievement", type="primary")
     
@@ -227,6 +207,7 @@ with st.form("floating_achievement"):
             floating=True,
             position=floating_position,
             duration=floating_duration,
+            dissolve=floating_dissolve,
             icon_background_color=floating_icon_color,
             background_color=floating_bg_color,
             text_color="#FFFFFF"
@@ -238,9 +219,9 @@ st.markdown("---")
 st.header("📚 Parameters")
 
 param_data = {
-    "Parameter": ["title", "description", "points", "icon_text", "duration", "icon_background_color", "background_color", "text_color", "shadow_color", "auto_width", "floating", "position"],
-    "Type": ["str", "str", "int", "str", "int", "str", "str", "str", "str", "bool", "bool", "str"],
-    "Default": ['""', '""', "0", '""', "5000", "#8BC34A", "#2E7D32", "#FFFFFF", "rgba(0,0,0,0.3)", "True", "False", '"top"'],
+    "Parameter": ["title", "description", "points", "icon_text", "duration", "icon_background_color", "background_color", "text_color", "shadow_color", "auto_width", "floating", "position", "dissolve"],
+    "Type": ["str", "str", "int", "str", "int", "str", "str", "str", "str", "bool", "bool", "str", "int"],
+    "Default": ['""', '""', "0", '""', "5000", "#8BC34A", "#2E7D32", "#FFFFFF", "rgba(0,0,0,0.3)", "True", "False", '"top"', "0"],
     "Description": [
         "The main title displayed on the achievement",
         "The achievement description/name", 
@@ -253,7 +234,8 @@ param_data = {
         "Color for shadows and depth effects",
         "Whether to auto-fit width to container",
         "Whether to display as floating overlay above content", 
-        "Vertical position when floating: 'top', 'middle', 'bottom'"
+        "Vertical position when floating: 'top', 'middle', 'bottom', or pixel value like '100px'",
+        "Time in milliseconds to start dissolving/fading effect (0 = no dissolve)"
     ]
 }
 

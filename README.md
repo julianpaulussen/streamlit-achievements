@@ -9,6 +9,9 @@
 - **Customizable Colors**: Full control over icon, background, text, and shadow colors
 - **Flexible Content**: Optional title, description, points, and icon text
 - **Auto-Hide**: Configurable duration with automatic slide-out
+- **Floating Mode**: Display achievements as overlays that float over content like `st.balloons()`
+- **Dissolve Effect**: Gradual fade-out effect for smooth visual transitions
+- **Flexible Positioning**: Preset positions (top, middle, bottom) or custom pixel positioning
 - **Responsive**: Works on desktop and mobile devices
 
 ## Installation
@@ -46,6 +49,10 @@ if st.button("Unlock Achievement"):
 | `background_color` | str | `"#2E7D32"` | Color for the expanding background |
 | `text_color` | str | `"#FFFFFF"` | Color for text and icon content |
 | `shadow_color` | str | `"rgba(0,0,0,0.3)"` | Color for shadows and depth effects |
+| `auto_width` | bool | `True` | Whether to auto-fit width to container |
+| `floating` | bool | `False` | Whether to display as floating overlay above content |
+| `position` | str | `"top"` | Vertical position when floating: "top", "middle", "bottom", or pixel value like "100px" |
+| `dissolve` | int | `0` | Time in milliseconds to start dissolving/fading effect (0 = no dissolve) |
 | `key` | str | `None` | Optional key for the component |
 
 ## Examples
@@ -125,6 +132,67 @@ streamlit_achievements(
     points=500,
     icon_text="👑",
     duration=7000  # Show for 7 seconds
+)
+```
+
+### Floating Achievements
+
+```python
+# Floating at top
+streamlit_achievements(
+    title="Floating Achievement!",
+    description="At the top of the screen",
+    points=25,
+    icon_text="🎈",
+    floating=True,
+    position="top"
+)
+
+# Floating in middle
+streamlit_achievements(
+    title="Centered Achievement!",
+    description="In the middle of the screen",
+    points=50,
+    icon_text="⭐",
+    floating=True,
+    position="middle",
+    background_color="#6200EA"
+)
+
+# Custom position (120px from top)
+streamlit_achievements(
+    title="Custom Position",
+    description="120px from top",
+    points=30,
+    icon_text="📍",
+    floating=True,
+    position="120px"
+)
+```
+
+### Dissolve Effect
+
+```python
+# Standard dissolve
+streamlit_achievements(
+    title="Dissolving Achievement",
+    description="Fades after 3 seconds",
+    points=20,
+    icon_text="✨",
+    duration=6000,
+    dissolve=3000  # Start fading after 3 seconds
+)
+
+# Floating with dissolve
+streamlit_achievements(
+    title="Float + Dissolve",
+    description="Best of both worlds!",
+    points=40,
+    icon_text="🌟",
+    floating=True,
+    position="middle",
+    duration=8000,
+    dissolve=4000
 )
 ```
 
