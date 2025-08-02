@@ -37,32 +37,33 @@ body {
 
 /* Floating variants */
 .achievement-container.floating {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%) translateX(-100%);
-  margin: 0;
-  z-index: 9999;
-  width: 400px;
-  max-width: calc(100vw - 40px);
-  min-width: 300px;
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateX(-100%) !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  width: 400px !important;
+  max-width: calc(100vw - 40px) !important;
+  min-width: 300px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
 
 .achievement-container.floating.auto-width {
-  width: calc(100vw - 40px);
-  max-width: 600px;
+  width: calc(100vw - 40px) !important;
+  max-width: 600px !important;
 }
 
 .achievement-container.floating.top {
-  top: 20px;
+  top: 20px !important;
 }
 
 .achievement-container.floating.middle {
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%) translateX(-100%);
+  top: 50% !important;
+  transform: translateX(-50%) translateY(-50%) translateX(-100%) !important;
 }
 
 .achievement-container.floating.bottom {
-  bottom: 20px;
+  bottom: 20px !important;
 }
 
 @keyframes slideIn {

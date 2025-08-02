@@ -112,6 +112,128 @@ streamlit_achievements(
 
 st.code(code_example, language="python")
 
+st.markdown("---")
+
+# Floating achievements demo section
+st.header("🎈 Floating Achievements")
+st.markdown("Achievements can float over your content like `st.balloons()`!")
+
+floating_col1, floating_col2, floating_col3 = st.columns(3)
+
+with floating_col1:
+    if st.button("Float at Top"):
+        streamlit_achievements(
+            title="Floating Achievement!",
+            description="At the top of the screen",
+            points=25,
+            icon_text="🎈",
+            floating=True,
+            position="top"
+        )
+
+with floating_col2:
+    if st.button("Float in Middle"):
+        streamlit_achievements(
+            title="Centered Achievement!",
+            description="In the middle of the screen",
+            points=50,
+            icon_text="⭐",
+            floating=True,
+            position="middle",
+            background_color="#6200EA"
+        )
+
+with floating_col3:
+    if st.button("Float at Bottom"):
+        streamlit_achievements(
+            title="Bottom Achievement!",
+            description="At the bottom of the screen",
+            points=25,
+            icon_text="🎯",
+            floating=True,
+            position="bottom",
+            icon_background_color="#FF5722",
+            background_color="#D32F2F"
+        )
+
+st.info("💡 **Tip:** Floating achievements appear as overlays and don't affect page layout, making them perfect for notifications!")
+
+# Add floating achievements to the custom form
+st.markdown("---")
+st.header("🎮 Try Floating Mode in Custom Form")
+
+with st.form("floating_achievement"):
+    st.subheader("Create a Floating Achievement")
+    
+    floating_col_a, floating_col_b = st.columns(2)
+    
+    with floating_col_a:
+        floating_title = st.text_input(
+            "Achievement Title", 
+            value="Floating Success!",
+            help="The main title for your floating achievement"
+        )
+        floating_description = st.text_input(
+            "Achievement Description", 
+            value="You mastered floating mode!",
+            help="The description for your floating achievement"
+        )
+        floating_points = st.number_input(
+            "Points", 
+            min_value=0, 
+            max_value=1000, 
+            value=75,
+            help="Achievement point value"
+        )
+        floating_icon = st.text_input(
+            "Icon Text/Emoji", 
+            value="🚀",
+            help="Text or emoji to display in the achievement icon"
+        )
+    
+    with floating_col_b:
+        floating_position = st.selectbox(
+            "Floating Position",
+            options=["top", "middle", "bottom"],
+            index=0,
+            help="Where the floating achievement should appear on screen"
+        )
+        floating_bg_color = st.color_picker(
+            "Background Color", 
+            value="#9C27B0",
+            help="Color for the floating achievement background"
+        )
+        floating_icon_color = st.color_picker(
+            "Icon Color", 
+            value="#E1BEE7",
+            help="Color for the floating achievement icon"
+        )
+        floating_duration = st.slider(
+            "Display Duration (ms)", 
+            min_value=3000, 
+            max_value=10000, 
+            value=6000,
+            help="How long the floating achievement stays visible"
+        )
+    
+    floating_submitted = st.form_submit_button("🌟 Launch Floating Achievement", type="primary")
+    
+    if floating_submitted:
+        streamlit_achievements(
+            title=floating_title,
+            description=floating_description,
+            points=int(floating_points),
+            icon_text=floating_icon,
+            floating=True,
+            position=floating_position,
+            duration=floating_duration,
+            icon_background_color=floating_icon_color,
+            background_color=floating_bg_color,
+            text_color="#FFFFFF"
+        )
+
+st.markdown("---")
+
 # Parameter documentation
 st.header("📚 Parameters")
 
@@ -137,4 +259,3 @@ param_data = {
 
 st.table(param_data)
 
-st.markdown("---")
