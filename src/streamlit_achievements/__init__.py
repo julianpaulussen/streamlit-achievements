@@ -22,6 +22,10 @@ def streamlit_achievements(
     background_color: str = "#2E7D32",
     text_color: str = "#FFFFFF",
     shadow_color: str = "rgba(0,0,0,0.3)",
+    auto_width: bool = True,
+    floating: bool = False,
+    position: str = "top",
+    dissolve: int = 0,
     key: Optional[str] = None,
 ):
     """
@@ -37,8 +41,17 @@ def streamlit_achievements(
     - background_color: Color for the expanding background (default: "#2E7D32")
     - text_color: Color for the text and icon content (default: "#FFFFFF")
     - shadow_color: Color for shadows and depth effects (default: "rgba(0,0,0,0.3)")
+    - auto_width: Whether to auto-fit width to container (default: True)
+    - floating: Whether to display as floating overlay above content (default: False)
+    - position: Vertical position when floating - "top", "middle", "bottom", or pixel value like "100px" (default: "top")
+    - dissolve: Time in milliseconds to start dissolving/fading effect (0 = no dissolve) (default: 0)
     - key: Optional key for the component
     """
+    # Validate position parameter - allow pixel values or predefined positions
+    valid_positions = ["top", "middle", "bottom"]
+    if position not in valid_positions and not (position.endswith('px') and position[:-2].isdigit()):
+        position = "top"
+    
     # Add timestamp to make each call unique and prevent Streamlit caching issues
     import time
     timestamp = int(time.time() * 1000)  # Current time in milliseconds
@@ -53,6 +66,10 @@ def streamlit_achievements(
         background_color=background_color,
         text_color=text_color,
         shadow_color=shadow_color,
+        auto_width=auto_width,
+        floating=floating,
+        position=position,
+        dissolve=dissolve,
         timestamp=timestamp,  # Add timestamp to ensure uniqueness
         key=key,
     )
