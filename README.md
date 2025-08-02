@@ -1,253 +1,155 @@
-# streamlit-achievements
+# 🏆 Streamlit Achievements
 
-🎮 A Streamlit custom component that creates achievement notifications with smooth animations.
+[![PyPI version](https://badge.fury.io/py/streamlit-achievements.svg)](https://badge.fury.io/py/streamlit-achievements)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Streamlit](https://img.shields.io/badge/streamlit-1.0+-red.svg)](https://streamlit.io)
 
-## Features
+A modern, customizable achievement notification component for Streamlit applications. Add beautiful animated achievement unlocks to your apps with customizable styling and behavior.
 
-- **Design**: Authentic achievement look and feel
-- **Smooth Animations**: Slide-in, background expansion, text fade-in, and slide-out effects
-- **Customizable Colors**: Full control over icon, background, text, and shadow colors
-- **Flexible Content**: Optional title, description, points, and icon text
-- **Auto-Hide**: Configurable duration with automatic slide-out
-- **Floating Mode**: Display achievements as overlays that float over content like `st.balloons()`
-- **Dissolve Effect**: Gradual fade-out effect for smooth visual transitions
-- **Flexible Positioning**: Preset positions (top, middle, bottom) or custom pixel positioning
-- **Responsive**: Works on desktop and mobile devices
+![Demo](https://via.placeholder.com/800x400/1f1f1f/ffffff?text=Streamlit+Achievements+Demo)
 
-## Installation
+## ✨ Features
 
-```sh
+- **Beautiful Animations**: Smooth achievement animations
+- **Floating Mode**: Display achievements as floating overlays above content
+- **Customizable Styling**: Full control over colors, shadows, and appearance
+- **Flexible Positioning**: Top, middle, bottom, or custom pixel positioning
+- **Timing Controls**: Configure display duration and fade effects
+- **Easy Integration**: One-line integration with your Streamlit apps
+- **Icon Support**: Use emojis, text, or custom icons in achievements
+
+## 📦 Installation
+
+```bash
 pip install streamlit-achievements
 ```
 
-## Basic Usage
+## 🚀 Quick Start
 
 ```python
 import streamlit as st
 from streamlit_achievements import streamlit_achievements
 
-# Simple achievement
-if st.button("Unlock Achievement"):
-    streamlit_achievements(
-        title="Achievement Unlocked!",
-        description="You Win",
-        points=10,
-        icon_text="🏆"
-    )
-```
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | str | `""` | The main title displayed on the achievement |
-| `description` | str | `""` | The achievement description/name |
-| `points` | int | `0` | Point value for the achievement (shows "P" suffix when > 0) |
-| `icon_text` | str | `""` | Text or emoji displayed in the circular icon |
-| `duration` | int | `5000` | Duration in milliseconds before auto-hide |
-| `icon_background_color` | str | `"#8BC34A"` | Color for the circular icon background |
-| `background_color` | str | `"#2E7D32"` | Color for the expanding background |
-| `text_color` | str | `"#FFFFFF"` | Color for text and icon content |
-| `shadow_color` | str | `"rgba(0,0,0,0.3)"` | Color for shadows and depth effects |
-| `auto_width` | bool | `True` | Whether to auto-fit width to container |
-| `floating` | bool | `False` | Whether to display as floating overlay above content |
-| `position` | str | `"top"` | Vertical position when floating: "top", "middle", "bottom", or pixel value like "100px" |
-| `dissolve` | int | `0` | Time in milliseconds to start dissolving/fading effect (0 = no dissolve) |
-| `key` | str | `None` | Optional key for the component |
-
-## Examples
-
-### Gaming Achievements
-
-```python
-# Victory achievement
 streamlit_achievements(
-    title="Victory!",
-    description="First Place",
-    points=25,
-    icon_text="🏆"
-)
-
-# Level up achievement
-streamlit_achievements(
-    title="Level Up!",
-    description="Reached Level 10",
-    points=15,
-    icon_text="📈"
-)
-
-# Perfect score achievement
-streamlit_achievements(
-    title="Perfect!",
-    description="100% Complete",
+    title="Level Complete!",
+    description="You finished Level 1",
     points=100,
-    icon_text="⭐"
-)
-```
-
-### Custom Colors
-
-```python
-# Ocean theme
-streamlit_achievements(
-    title="Ocean Explorer",
-    description="Deep Sea Discovery",
-    points=25,
-    icon_text="🌊",
-    icon_background_color="#42A5F5",
-    background_color="#1976D2"
+    icon_text="🎯"
 )
 
-# Sunset theme
 streamlit_achievements(
-    title="Sunset Warrior",
-    description="Epic Journey",
-    points=50,
-    icon_text="🌅",
-    icon_background_color="#FF9800",
-    background_color="#F57C00"
-)
-```
-
-### Empty Values
-
-```python
-# Minimal achievement (only description)
-streamlit_achievements(
-    description="Just Description",
-    icon_text="✨"
-)
-
-# Empty achievement (shows with default styling)
-streamlit_achievements()
-```
-
-### Custom Duration
-
-```python
-# Long duration achievement
-streamlit_achievements(
-    title="Epic Achievement!",
-    description="Legendary Status",
-    points=500,
+    title="Master Player",
+    description="Reached 1000 Points",
+    points=1000,
     icon_text="👑",
-    duration=7000  # Show for 7 seconds
-)
-```
-
-### Floating Achievements
-
-```python
-# Floating at top
-streamlit_achievements(
-    title="Floating Achievement!",
-    description="At the top of the screen",
-    points=25,
-    icon_text="🎈",
-    floating=True,
-    position="top"
-)
-
-# Floating in middle
-streamlit_achievements(
-    title="Centered Achievement!",
-    description="In the middle of the screen",
-    points=50,
-    icon_text="⭐",
     floating=True,
     position="middle",
-    background_color="#6200EA"
-)
-
-# Custom position (120px from top)
-streamlit_achievements(
-    title="Custom Position",
-    description="120px from top",
-    points=30,
-    icon_text="📍",
-    floating=True,
-    position="120px"
+    background_color="#FFD700",
+    icon_background_color="#FFA500"
 )
 ```
 
-### Dissolve Effect
+## 📋 API Reference
 
+### `streamlit_achievements()`
+
+| Parameter | Type | Description | Default |
+|-----------|------|-------------|---------|
+| `title` | `str` | The main title displayed on the achievement | `""` |
+| `description` | `str` | The achievement description/name | `""` |
+| `points` | `int` | Point value for the achievement | `0` |
+| `icon_text` | `str` | Text or emoji displayed in the circular icon | `""` |
+| `duration` | `int` | Duration in milliseconds for the animation | `5000` |
+| `icon_background_color` | `str` | Color for the circular icon background | `"#8BC34A"` |
+| `background_color` | `str` | Color for the expanding background | `"#2E7D32"` |
+| `text_color` | `str` | Color for text and icon content | `"#FFFFFF"` |
+| `shadow_color` | `str` | Color for shadows and depth effects | `"rgba(0,0,0,0.3)"` |
+| `auto_width` | `bool` | Whether to auto-fit width to container | `True` |
+| `floating` | `bool` | Whether to display as floating overlay above content | `False` |
+| `position` | `str` | Vertical position when floating: 'top', 'middle', 'bottom', or pixel value like '100px' | `"top"` |
+| `dissolve` | `int` | Time in milliseconds to start dissolving/fading effect, 0 = no dissolve | `0` |
+## 🎨 Styling Examples
+
+### Classic Achievement
 ```python
-# Standard dissolve
 streamlit_achievements(
-    title="Dissolving Achievement",
-    description="Fades after 3 seconds",
-    points=20,
-    icon_text="✨",
+    title="Achievement Unlocked!",
+    description="First Steps",
+    points=10,
+    icon_text="🏆",
+    icon_background_color="#8BC34A",
+    background_color="#2E7D32",
+    text_color="#FFFFFF"
+)
+```
+
+### Floating Achievement with Custom Position
+```python
+streamlit_achievements(
+    title="Floating Success!",
+    description="You mastered floating mode!",
+    points=75,
+    icon_text="🚀",
+    floating=True,
+    position="100px",  # Custom position from top
     duration=6000,
-    dissolve=3000  # Start fading after 3 seconds
-)
-
-# Floating with dissolve
-streamlit_achievements(
-    title="Float + Dissolve",
-    description="Best of both worlds!",
-    points=40,
-    icon_text="🌟",
-    floating=True,
-    position="middle",
-    duration=8000,
-    dissolve=4000
+    dissolve=3000,  # Start fading after 3 seconds
+    background_color="#9C27B0",
+    icon_background_color="#E1BEE7"
 )
 ```
 
-## Interactive Demo
+## 🚀 Example App
 
-To see all features in action, run the included example:
+A comprehensive example demonstrating all features, styling options, and positioning modes is provided in `example.py`. Run it with:
 
-```python
-import streamlit as st
-from streamlit_achievements import streamlit_achievements
-
-st.title("🎮 Achievement Demo")
-
-# Custom achievement builder
-with st.form("custom_achievement"):
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        title = st.text_input("Title", "Achievement Unlocked!")
-        description = st.text_input("Description", "You Win")
-        points = st.number_input("Points", 0, 1000, 10)
-        icon = st.text_input("Icon", "🎮")
-    
-    with col2:
-        icon_background_color = st.color_picker("Icon Color", "#8BC34A")
-        background_color = st.color_picker("Background", "#2E7D32")
-        text_color = st.color_picker("Text Color", "#FFFFFF")
-        shadow_opacity = st.slider("Shadow", 0.0, 1.0, 0.3)
-    
-    if st.form_submit_button("🚀 Show Achievement"):
-        streamlit_achievements(
-            title=title,
-            description=description,
-            points=points,
-            icon_text=icon,
-            icon_background_color=icon_background_color,
-            background_color=background_color,
-            text_color=text_color,
-            shadow_color=f"rgba(0,0,0,{shadow_opacity})"
-        )
+```sh
+streamlit run example.py
 ```
 
-## Styling Notes
+## 🛠️ Development
 
-- The component uses-inspired green colors by default
-- All colors accept standard CSS color formats (hex, rgb, rgba, named colors)
-- Points display includes "P" suffix when value > 0
-- Empty fields are automatically hidden
-- Text includes subtle shadows for better readability
-- Responsive design adapts to different screen sizes
+### Local Development
 
-## License
+```bash
+# Clone the repository
+git clone https://github.com/lejuliennn/streamlit-achievements.git
+cd streamlit-achievements
 
-MIT License - see LICENSE file for details.
+# Install dependencies
+pip install -r requirements.txt
 
-## Contributing
+# Run the example
+streamlit run example.py
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### Building
+
+```bash
+# Build the package
+cd ../../..
+python setup.py sdist bdist_wheel
+
+# Install locally
+pip install -e .
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+- 🐛 Issues: [GitHub Issues](https://github.com/lejuliennn/streamlit-achievements/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/lejuliennn/streamlit-achievements/discussions)
+
