@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setuptools.setup(
     name="streamlit-achievements",
-    version="0.1.0",
+    version="0.1.1",
     author="lejuliennn",
     author_email="julien.playsde@gmail.com",
     description="Streamlit component that lets you have achievements in your application",

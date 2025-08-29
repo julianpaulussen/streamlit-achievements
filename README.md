@@ -59,7 +59,7 @@ streamlit_achievements(
 | `description` | `str` | The achievement description/name | `""` |
 | `points` | `int` | Point value for the achievement | `0` |
 | `icon_text` | `str` | Text or emoji displayed in the circular icon | `""` |
-| `duration` | `int` | Duration in milliseconds for the animation | `5000` |
+| `duration` | `int` | Duration in milliseconds for the animation | `6500` |
 | `icon_background_color` | `str` | Color for the circular icon background | `"#8BC34A"` |
 | `background_color` | `str` | Color for the expanding background | `"#2E7D32"` |
 | `text_color` | `str` | Color for text and icon content | `"#FFFFFF"` |
@@ -67,7 +67,7 @@ streamlit_achievements(
 | `auto_width` | `bool` | Whether to auto-fit width to container | `True` |
 | `floating` | `bool` | Whether to display as floating overlay above content | `False` |
 | `position` | `str` | Vertical position when floating: 'top', 'middle', 'bottom', or pixel value like '100px' | `"top"` |
-| `dissolve` | `int` | Time in milliseconds to start dissolving/fading effect, 0 = no dissolve | `0` |
+| `dissolve` | `int` | Time in milliseconds to start disappearing; if 0/omitted, it disappears ~3s after the background fully fills | `0` |
 ## 🎨 Styling Examples
 
 ### Classic Achievement
@@ -92,8 +92,8 @@ streamlit_achievements(
     icon_text="🚀",
     floating=True,
     position="100px",  # Custom position from top
-    duration=6000,
-    dissolve=3000,  # Start fading after 3 seconds
+    duration=6500,
+    dissolve=5300,  # Disappear ~3s after background fill completes
     background_color="#9C27B0",
     icon_background_color="#E1BEE7"
 )
@@ -152,4 +152,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🐛 Issues: [GitHub Issues](https://github.com/lejuliennn/streamlit-achievements/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/lejuliennn/streamlit-achievements/discussions)
-

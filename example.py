@@ -87,15 +87,15 @@ with st.form("custom_achievement"):
             "Display Duration (ms)", 
             min_value=3000, 
             max_value=10000, 
-            value=6000,
+            value=6500,
             help="How long the achievement stays visible"
         )
         floating_dissolve = st.slider(
             "Dissolve Time (ms)", 
             min_value=0, 
             max_value=8000, 
-            value=2500,
-            help="Time after which achievement starts to fade (0 = no dissolve)"
+            value=5300,
+            help="Time to start disappearing. Default is ~2s after background fill if left 0."
         )
         st.subheader("🎯 Position Settings")
         floating_mode = st.checkbox(
@@ -172,8 +172,8 @@ streamlit_achievements(
     icon_text="🚀",
     floating=True,
     position="middle",  # or "top", "bottom", or "100px"
-    duration=6000,      # Display duration in milliseconds
-    dissolve=3000,      # Start fading after 3 seconds
+    duration=6500,      # Display duration in milliseconds
+    dissolve=5300,      # Disappear ~2s after background finish
     background_color="#9C27B0",
     icon_background_color="#E1BEE7"
 )
@@ -226,7 +226,7 @@ param_data = {
         "The achievement description/name", 
         "Point value for the achievement",
         "Text or emoji displayed in the circular icon",
-        "Duration in milliseconds for the animation (default: 5000)",
+        "Duration in milliseconds for the animation (default: 6500)",
         "Color for the circular icon background (default: '#8BC34A')",
         "Color for the expanding background (default: '#2E7D32')",
         "Color for text and icon content (default: '#FFFFFF')",
@@ -234,7 +234,7 @@ param_data = {
         "Whether to auto-fit width to container (default: True)",
         "Whether to display as floating overlay above content (default: False)", 
         "Vertical position when floating: 'top', 'middle', 'bottom', or pixel value like '100px' (default: 'top')",
-        "Time in milliseconds to start dissolving/fading effect, 0 = no dissolve (default: 0)"
+        "Time in milliseconds to start disappearing; if 0/omitted, it disappears ~2s after the background fully fills (default: 0)"
     ],
     "Required": [
         "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No"
@@ -242,4 +242,3 @@ param_data = {
 }
 
 st.dataframe(param_data, use_container_width=True, hide_index=True)
-

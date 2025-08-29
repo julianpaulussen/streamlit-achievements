@@ -7,6 +7,20 @@
 let lastAchievementTime = 0;
 let currentAchievementId = null;
 
+// Animation timing constants (ms)
+const TIMINGS = {
+  slideIn: 800,
+  expandDelay: 800,         // when background starts expanding
+  expandDuration: 2500,     // how long the background expands
+  textTitleDelay: 1500,
+  textDescriptionDelay: 1800,
+  textPointsDelay: 2100,
+  slideOut: 450,
+  defaultDuration: 6500     // new default display duration
+};
+const FILL_COMPLETE = TIMINGS.expandDelay + TIMINGS.expandDuration; // 3300ms with current values
+const WAIT_AFTER_FILL_MS = 3000; // wait 3s after fill before dissolving by default
+
 function sendValue(value) {
   Streamlit.setComponentValue(value)
 }
@@ -258,17 +272,54 @@ function createFloatingAchievement(doc, achievementId, title, description, point
     }
   }, 50);
   
-  // Add dissolve effect if specified
-  if (dissolve > 0 && dissolve < duration) {
-    setTimeout(() => {
-      achievementContainer.style.transition = 'opacity 1s ease-out';
-      achievementContainer.style.opacity = '0.3';
-    }, dissolve);
+  // Compute dissolve and duration to ensure background fully fills first
+  const effectiveDuration = Math.max(duration || TIMINGS.defaultDuration, FILL_COMPLETE + TIMINGS.slideOut + 1000);
+  // Determine when to dissolve: default is 2s after background is filled
+  let effectiveDissolve;
+  if (typeof dissolve === 'number' && dissolve > 0) {
+    effectiveDissolve = Math.max(dissolve, FILL_COMPLETE + WAIT_AFTER_FILL_MS);
+  } else {
+    effectiveDissolve = FILL_COMPLETE + WAIT_AFTER_FILL_MS;
   }
+  // Ensure dissolve happens before auto-hide
+  effectiveDissolve = Math.min(effectiveDissolve, Math.max(0, effectiveDuration - TIMINGS.slideOut - 50));
+
+  let earlyHidden = false;
+  // Start disappearing at dissolve time: fade + slide-out together, faster
+  setTimeout(() => {
+    earlyHidden = true;
+    achievementContainer.style.transition = `opacity ${TIMINGS.slideOut}ms ease-out, transform ${TIMINGS.slideOut}ms ease-in`;
+    achievementContainer.style.opacity = '0';
+    if (position === 'middle') {
+      achievementContainer.style.transform = 'translateX(-50%) translateY(-50%) translateX(100%)';
+    } else {
+      achievementContainer.style.transform = 'translateX(-50%) translateX(100%)';
+    }
+    const cleanup = () => {
+      if (doc.body.contains(achievementContainer)) doc.body.removeChild(achievementContainer);
+      if (currentAchievementId === achievementId) currentAchievementId = null;
+    };
+    const onEnd = () => {
+      achievementContainer.removeEventListener('transitionend', onEnd);
+      cleanup();
+    };
+    achievementContainer.addEventListener('transitionend', onEnd);
+    setTimeout(cleanup, TIMINGS.slideOut + 200);
+  }, effectiveDissolve);
   
   // Auto-hide after duration
-  const minDuration = Math.max(duration || 5000, 5000);
+  const minDuration = effectiveDuration;
+  const cleanup = () => {
+    if (doc.body.contains(achievementContainer)) {
+      doc.body.removeChild(achievementContainer);
+    }
+    if (currentAchievementId === achievementId) {
+      currentAchievementId = null;
+    }
+  };
+
   setTimeout(() => {
+    if (earlyHidden) return; // already handled by early dissolve
     achievementContainer.style.transition = 'all 0.8s ease-in';
     achievementContainer.style.opacity = '0';
     if (position === 'middle') {
@@ -276,15 +327,13 @@ function createFloatingAchievement(doc, achievementId, title, description, point
     } else {
       achievementContainer.style.transform = 'translateX(-50%) translateX(100%)';
     }
-    
-    setTimeout(() => {
-      if (doc.body.contains(achievementContainer)) {
-        doc.body.removeChild(achievementContainer);
-      }
-      if (currentAchievementId === achievementId) {
-        currentAchievementId = null;
-      }
-    }, 800);
+    // Prefer transitionend for robust cleanup, with timeout fallback
+    const onEnd = () => {
+      achievementContainer.removeEventListener('transitionend', onEnd);
+      cleanup();
+    };
+    achievementContainer.addEventListener('transitionend', onEnd);
+    setTimeout(cleanup, TIMINGS.slideOut + 200);
   }, minDuration);
 }
 
@@ -331,34 +380,63 @@ function createRegularAchievement(container, achievementId, title, description, 
   // Set appropriate frame height
   Streamlit.setFrameHeight(120);
   
-  // Add dissolve effect if specified
-  if (dissolve > 0 && dissolve < duration) {
-    setTimeout(() => {
-      const element = container.querySelector(`[data-achievement-id="${achievementId}"]`);
-      if (element) {
-        element.style.transition = 'opacity 1s ease-out';
-        element.style.opacity = '0.3';
-      }
-    }, dissolve);
+  // Compute dissolve and duration to ensure background fully fills first
+  const effectiveDuration = Math.max(duration || TIMINGS.defaultDuration, FILL_COMPLETE + TIMINGS.slideOut + 1000);
+  // Determine when to dissolve: default is 2s after background is filled
+  let effectiveDissolve;
+  if (typeof dissolve === 'number' && dissolve > 0) {
+    effectiveDissolve = Math.max(dissolve, FILL_COMPLETE + WAIT_AFTER_FILL_MS);
+  } else {
+    effectiveDissolve = FILL_COMPLETE + WAIT_AFTER_FILL_MS;
   }
+  effectiveDissolve = Math.min(effectiveDissolve, Math.max(0, effectiveDuration - TIMINGS.slideOut - 50));
+
+  let earlyHidden = false;
+  setTimeout(() => {
+    const element = container.querySelector(`[data-achievement-id="${achievementId}"]`);
+    if (!element) return;
+    earlyHidden = true;
+    // Start slide-out animation (opacity to 0 and slide) immediately
+    element.classList.add('slide-out');
+    const cleanup = () => {
+      if (container.contains(element)) {
+        container.removeChild(element);
+        console.log('Achievement removed (early dissolve):', achievementId);
+      }
+      if (currentAchievementId === achievementId) currentAchievementId = null;
+    };
+    const onAnimEnd = () => {
+      element.removeEventListener('animationend', onAnimEnd);
+      cleanup();
+    };
+    element.addEventListener('animationend', onAnimEnd);
+    setTimeout(cleanup, TIMINGS.slideOut + 200);
+  }, effectiveDissolve);
   
   // Auto-hide after specified duration
-  const minDuration = Math.max(duration || 5000, 5000);
+  const minDuration = effectiveDuration;
   const hideTimeout = setTimeout(() => {
     const element = container.querySelector(`[data-achievement-id="${achievementId}"]`);
+    if (earlyHidden || !element) return; // already handled
     if (element && !element.classList.contains('slide-out')) {
       console.log('Starting slide-out for achievement:', achievementId);
       element.classList.add('slide-out');
-      setTimeout(() => {
+      const cleanup = () => {
         if (container.contains(element)) {
           container.removeChild(element);
           console.log('Achievement removed:', achievementId);
         }
-        // Clear tracking when this specific achievement is done
         if (currentAchievementId === achievementId) {
           currentAchievementId = null;
         }
-      }, 600); // Wait for slide-out animation
+      };
+      // Prefer animationend to ensure cleanup, with timeout fallback
+      const onAnimEnd = () => {
+        element.removeEventListener('animationend', onAnimEnd);
+        cleanup();
+      };
+      element.addEventListener('animationend', onAnimEnd);
+      setTimeout(cleanup, TIMINGS.slideOut + 200);
     }
   }, minDuration);
   
@@ -414,7 +492,7 @@ function onRender(event) {
     description, 
     points, 
     icon_text, 
-    duration || 5000,
+    duration || TIMINGS.defaultDuration,
     icon_background_color || "#8BC34A",
     background_color || "#2E7D32", 
     text_color || "#FFFFFF",
@@ -616,11 +694,11 @@ function injectParentWindowHandler() {
           }
           
           .streamlit-floating-achievement.slide-out {
-            animation: streamlit-slideOutFloating 0.6s ease-in forwards;
+            animation: streamlit-slideOutFloating 0.45s ease-in forwards;
           }
           
           .streamlit-floating-achievement.middle.slide-out {
-            animation: streamlit-slideOutMiddle 0.6s ease-in forwards;
+            animation: streamlit-slideOutMiddle 0.45s ease-in forwards;
           }
           
           @keyframes streamlit-slideOutFloating {
@@ -710,7 +788,7 @@ function injectParentWindowHandler() {
                 if (document.body.contains(achievement)) {
                   document.body.removeChild(achievement);
                 }
-              }, 600);
+              }, 500);
             }
           }, data.duration);
         }

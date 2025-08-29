@@ -220,15 +220,15 @@ body {
 
 /* Slide out animation */
 .achievement-container.slide-out {
-  animation: slideOut 0.6s ease-in forwards;
+  animation: slideOut 0.45s ease-in forwards;
 }
 
 .achievement-container.floating.slide-out:not(.middle) {
-  animation: slideOutFloating 0.6s ease-in forwards;
+  animation: slideOutFloating 0.45s ease-in forwards;
 }
 
 .achievement-container.floating.middle.slide-out {
-  animation: slideOutMiddle 0.6s ease-in forwards;
+  animation: slideOutMiddle 0.45s ease-in forwards;
 }
 
 @keyframes slideOut {
