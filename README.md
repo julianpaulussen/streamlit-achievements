@@ -1,7 +1,7 @@
 # 🏆 Streamlit Achievements
 
 [![PyPI version](https://badge.fury.io/py/streamlit-achievements.svg)](https://badge.fury.io/py/streamlit-achievements)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Streamlit](https://img.shields.io/badge/streamlit-1.0+-red.svg)](https://streamlit.io)
 
 A modern, customizable achievement notification component for Streamlit applications. Add beautiful animated achievement unlocks to your apps with customizable styling and behavior.
